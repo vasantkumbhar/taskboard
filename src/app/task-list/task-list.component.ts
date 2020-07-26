@@ -1,10 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import * as _ from 'lodash';
-import { ITask, IList, IDetailList } from 'src/model';
-import data from 'src/constants/data';
-import { TaskboardService } from '../service/taskboard.service';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { ToastrService } from 'ngx-toastr';
+import * as _ from 'lodash';
 
+import { ITask, IList, IDetailList } from 'src/model';
+import { TaskboardService } from '../service/taskboard.service';
 
 @Component({
   selector: 'app-task-list',
@@ -19,11 +19,9 @@ export class TaskListComponent implements OnInit {
   @Input() connectedTo: string[];
   @Output() taskListEvent = new EventEmitter<string>();
 
-  constructor(private taskboardService: TaskboardService) { }
+  constructor(private taskboardService: TaskboardService, private toastr: ToastrService) { }
 
-  ngOnInit() {
-    console.log(this.list.taskList);
-  }
+  ngOnInit() {}
 
   public addCard(){
     this.addTaskFalg = true;
@@ -38,29 +36,23 @@ export class TaskListComponent implements OnInit {
         categoryId: this.list.category.id,
       };
       this.taskboardService.add(newTask, 'tasks').subscribe((res: ITask) => {
-        console.log(res);
         this.list.taskList.push(res);
+        this.toastr.success(newTask.name + ' added successfully');
       })
     }
   }
 
   public save(item: ITask | IList, type: string){
-    if(type === 'task'){
-      this.taskboardService.put(item.id, 'tasks/', item).subscribe((res: ITask) => {
-
-      })
-    }
-    if(type === 'category'){
-      this.taskboardService.put(item.id, 'categories/', item).subscribe((res: IList) => {
-
-      })
-    }
+    this.taskboardService.put(item.id, type, item).subscribe((res: ITask | IList) => {
+      this.toastr.success(item.name + ' updated successfully');
+    })
   }
 
   public delete(item: ITask){
     this.taskboardService.deleteTask(item.id, 'tasks/').subscribe((res) => {
       const taskIndex = this.list.taskList.findIndex(task => task.id === item.id);
       this.list.taskList.splice(taskIndex, 1);
+      this.toastr.success(item.name + ' deleted successfully');
     });
   }
 
@@ -79,8 +71,8 @@ export class TaskListComponent implements OnInit {
           event.container.data,
           event.previousIndex,
           event.currentIndex);
+        this.toastr.success(res.name + ' moved successfully');
       });
     }
   }
-
 }

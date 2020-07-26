@@ -1,5 +1,5 @@
 <div
-  class="container"
+  class="mat-app-background container"
   cdkDropListOrientation="vertical"
   cdkDropList (cdkDropListDropped)="drop($event)">
   <div cdkDrag class="taskboard" *ngFor="let list of detailList">
@@ -11,7 +11,7 @@
     </app-task-list>
   </div>
   <div class="taskboard">
-    <button class="add" *ngIf="!addListFlag" (click)="addList()">+ Add another list</button>
+    <button class="add" *ngIf="!addListFlag" (click)="addListFlag = !addListFlag">+ Add another list</button>
     <app-add-new
       *ngIf="addListFlag"
       (saveEmitter)="addList($event)">

@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import groupBy from 'lodash/groupBy';
-import { ITask, IList, IDetailList } from 'src/model';
-import { TaskboardService } from './service/taskboard.service';
 import { Subscription, forkJoin } from 'rxjs';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { ToastrService } from 'ngx-toastr';
+import groupBy from 'lodash/groupBy';
+
+import { ITask, IList, IDetailList } from 'src/model';
+import { TaskboardService } from './service/taskboard.service';
 
 @Component({
   selector: 'app-root',
@@ -15,12 +17,14 @@ export class AppComponent implements OnInit, OnDestroy {
   public categories: IList[];
   public addListFlag = false;
   public connectedTo: string[] = [];
-  private taskListSubscription: Subscription;
   public detailList: IDetailList[] = [];
-  constructor(private taskboardService: TaskboardService){}
+
+  private taskListSubscription: Subscription;
+
+  constructor(private taskboardService: TaskboardService, private toastr: ToastrService){}
 
   ngOnInit() {
-    let combinedTaskCategory = forkJoin(
+    this.taskListSubscription = forkJoin(
       this.taskboardService.get('categories'),
       this.taskboardService.get('tasks')
     ).subscribe((res: Array<any>) => {
@@ -35,8 +39,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public addList(listName: string) {
-    this.addListFlag = true;
+    if(!listName){
+      this.addListFlag = false;
+      return;
+    }
     if(listName && this.isListNameValid(listName)){
+      this.addListFlag = false;
       const newList = {
         id: String(Math.random()),
         name: listName,
@@ -45,14 +53,16 @@ export class AppComponent implements OnInit, OnDestroy {
         this.categories.push(res);
         this.detailList.push({category: res, taskList: []});
         this.connectedTo.push(res.id);
-        this.addListFlag = false;
+        this.toastr.success(res.name + ' added succesfully.');
       })
+    } else {
+      this.toastr.error('Enter Valid Name');
     }
   }
 
   private isListNameValid(listName: string){
     for(const category of this.categories){
-      if(category.name === listName){
+      if(category.name.toLowerCase() === listName.toLowerCase()){
         return false;
       }
     };
@@ -63,10 +73,11 @@ export class AppComponent implements OnInit, OnDestroy {
     this.taskboardService.deleteTask(listId, 'categories/').subscribe((res) => {
       const listIndex = this.detailList.findIndex(list => list.category.id === listId);
       this.detailList.splice(listIndex, 1);
+      this.toastr.success('List deleted successfully.');
     });
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  public drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.detailList, event.previousIndex, event.currentIndex);
   }
 

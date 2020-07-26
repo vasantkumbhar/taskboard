@@ -1,7 +1,7 @@
 <app-inline-edit
   [item]="list.category"
   [categories]="categories"
-  (saveEmitter)="save($event, 'category')"
+  (saveEmitter)="save($event, 'categories/')"
   (deleteEmitter)="deleteList($event)">
 </app-inline-edit>
 <div
@@ -15,13 +15,15 @@
     <div class="category" *ngFor="let task of list.taskList" cdkDrag [cdkDragData]="task">
       <app-inline-edit
         [item]="task"
-        (saveEmitter)="save($event, 'task')"
+        (saveEmitter)="save($event, 'tasks/')"
         (deleteEmitter)="delete($event)">
       </app-inline-edit>
     </div>
+
+    <button class="add" *ngIf="!addTaskFalg" (click)="addCard()">+ Add a Card</button>
+    <app-add-new
+      *ngIf="addTaskFalg"
+      (saveEmitter)="addTask($event)">
+    </app-add-new>
 </div>
-<button class="add" *ngIf="!addTaskFalg" (click)="addCard()">+ Add a Card</button>
-<app-add-new
-  *ngIf="addTaskFalg"
-  (saveEmitter)="addTask($event)">
-</app-add-new>
+

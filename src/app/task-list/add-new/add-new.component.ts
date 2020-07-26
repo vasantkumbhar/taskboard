@@ -11,12 +11,9 @@ export class AddNewComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   public save(taskname?: string) {
     this.saveEmitter.emit(taskname);
   }
-
-
 }

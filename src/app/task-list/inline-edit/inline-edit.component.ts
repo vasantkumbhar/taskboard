@@ -13,13 +13,10 @@ export class InlineEditComponent implements OnInit {
   @Output() saveEmitter = new EventEmitter<ITask | IList>();
   @Output() deleteEmitter = new EventEmitter<ITask | IList>();
   public editable = false;
-  // public name: string;
 
   constructor() { }
 
-  ngOnInit() {
-    // this.name = this.item.name;
-  }
+  ngOnInit() {}
 
   public clickOnDiv(){
     this.editable = true;
@@ -30,16 +27,6 @@ export class InlineEditComponent implements OnInit {
     if(flag){
       this.saveEmitter.emit(item);
     }
-  }
-
-  private isListNameValid(listName: string){
-    console.log(this.categories);
-    for(const category of this.categories){
-      if(category.name === listName){
-        return false;
-      }
-    };
-    return true;
   }
 
   public delete(item: ITask | IList){
