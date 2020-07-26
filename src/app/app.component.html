@@ -1,0 +1,20 @@
+<div
+  class="container"
+  cdkDropListOrientation="vertical"
+  cdkDropList (cdkDropListDropped)="drop($event)">
+  <div cdkDrag class="taskboard" *ngFor="let list of detailList">
+    <app-task-list
+      [list]='list'
+      [categories]="categories"
+      [connectedTo]='connectedTo'
+      (taskListEvent)="deleteList($event)">
+    </app-task-list>
+  </div>
+  <div class="taskboard">
+    <button class="add" *ngIf="!addListFlag" (click)="addList()">+ Add another list</button>
+    <app-add-new
+      *ngIf="addListFlag"
+      (saveEmitter)="addList($event)">
+    </app-add-new>
+  </div>
+</div>

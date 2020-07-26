@@ -1,0 +1,27 @@
+<app-inline-edit
+  [item]="list.category"
+  [categories]="categories"
+  (saveEmitter)="save($event, 'category')"
+  (deleteEmitter)="deleteList($event)">
+</app-inline-edit>
+<div
+  class="task-list-container"
+  cdkDropList
+  cdkDropListOrientation="vertical"
+  id="{{list.category.id}}"
+  [cdkDropListData]="list.taskList"
+  [cdkDropListConnectedTo]="connectedTo"
+  (cdkDropListDropped)="drop($event)">
+    <div class="category" *ngFor="let task of list.taskList" cdkDrag [cdkDragData]="task">
+      <app-inline-edit
+        [item]="task"
+        (saveEmitter)="save($event, 'task')"
+        (deleteEmitter)="delete($event)">
+      </app-inline-edit>
+    </div>
+</div>
+<button class="add" *ngIf="!addTaskFalg" (click)="addCard()">+ Add a Card</button>
+<app-add-new
+  *ngIf="addTaskFalg"
+  (saveEmitter)="addTask($event)">
+</app-add-new>

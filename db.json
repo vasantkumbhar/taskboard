@@ -1,0 +1,16 @@
+{
+  "boards": [
+    {
+      "id": 1,
+      "title": "Board-1",
+      "author": "Board 1"
+    },
+    {
+      "id": 2,
+      "title": "Board-2",
+      "author": "Board 2"
+    }
+  ],
+  "categories": [],
+  "tasks": []
+}

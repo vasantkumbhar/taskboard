@@ -1,0 +1,11 @@
+<div class="name-container" *ngIf="!editable">
+  <span class="name" (click)="clickOnDiv()">{{ item.name }}</span>
+  <span class="delete" (click)="delete(item)"></span>
+</div>
+<div *ngIf="editable">
+  <input type="text" [(ngModel)]="item.name" />
+  <div class="action-container">
+    <button (click)="save(true, item)">Save</button>
+    <button (click)="save(false)">Cancel</button>
+  </div>
+</div>

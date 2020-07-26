@@ -1,0 +1,5 @@
+<input type="text" #taskName/>
+<div class="action-container">
+  <button type="button" (click)="save(taskName.value)">Save</button>
+  <button type="button" (click)="save()">Cancel</button>
+</div>
