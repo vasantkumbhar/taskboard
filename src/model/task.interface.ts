@@ -1,7 +1,7 @@
 export default interface ITask {
   id: string;
   name: string;
-  categoryId: number;
+  categoryId: string;
   dueDate?: string;
   priority?: number;
   boardId?: number;

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription, forkJoin } from 'rxjs';
+import { forkJoin, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import { ToastrService } from 'ngx-toastr';
 import groupBy from 'lodash/groupBy';
@@ -19,15 +20,16 @@ export class AppComponent implements OnInit, OnDestroy {
   public connectedTo: string[] = [];
   public detailList: IDetailList[] = [];
 
-  private taskListSubscription: Subscription;
+  private destroySubject$: Subject<void> = new Subject<void>();
 
   constructor(private taskboardService: TaskboardService, private toastr: ToastrService){}
 
   ngOnInit() {
-    this.taskListSubscription = forkJoin(
+    forkJoin(
       this.taskboardService.get('categories'),
       this.taskboardService.get('tasks')
-    ).subscribe((res: Array<any>) => {
+    ).pipe(takeUntil(this.destroySubject$))
+    .subscribe((res: Array<any>) => {
       this.categories = res[0];
       this.taskList = groupBy(res[1], 'categoryId');
 
@@ -49,7 +51,9 @@ export class AppComponent implements OnInit, OnDestroy {
         id: String(Math.random()),
         name: listName,
       };
-      this.taskboardService.add(newList, 'categories').subscribe((res: IList) => {
+      this.taskboardService.add(newList, 'categories')
+      .pipe(takeUntil(this.destroySubject$))
+      .subscribe((res: IList) => {
         this.categories.push(res);
         this.detailList.push({category: res, taskList: []});
         this.connectedTo.push(res.id);
@@ -70,7 +74,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public deleteList(listId: string){
-    this.taskboardService.deleteTask(listId, 'categories/').subscribe((res) => {
+    this.taskboardService.deleteTask(listId, 'categories/')
+    .pipe(takeUntil(this.destroySubject$))
+    .subscribe((res) => {
       const listIndex = this.detailList.findIndex(list => list.category.id === listId);
       this.detailList.splice(listIndex, 1);
       this.toastr.success('List deleted successfully.');
@@ -82,6 +88,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.taskListSubscription.unsubscribe();
+    this.destroySubject$.next();
+    this.destroySubject$.complete();
   }
 }

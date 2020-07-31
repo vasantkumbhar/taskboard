@@ -9,7 +9,6 @@ import { ITask, IList } from 'src/model';
 export class InlineEditComponent implements OnInit {
 
   @Input() item: ITask | IList;
-  @Input() categories: IList[];
   @Output() saveEmitter = new EventEmitter<ITask | IList>();
   @Output() deleteEmitter = new EventEmitter<ITask | IList>();
   public editable = false;
